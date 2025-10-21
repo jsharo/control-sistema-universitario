@@ -1,0 +1,974 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Control Universitario API",
+		"description": "Colección de endpoints para el sistema de control universitario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Carreras",
+			"item": [
+				{
+					"name": "Crear Carrera",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ingeniería en Sistemas\",\n  \"duracion\": 10,\n  \"descripcion\": \"Carrera enfocada en el desarrollo de sistemas de información\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carrera",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carrera"
+							]
+						},
+						"description": "Crear una nueva carrera universitaria"
+					}
+				},
+				{
+					"name": "Obtener Todas las Carreras",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carrera",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carrera"
+							]
+						},
+						"description": "Obtener la lista de todas las carreras disponibles"
+					}
+				},
+				{
+					"name": "Obtener Carrera por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carrera",
+								"{{carreraId}}"
+							]
+						},
+						"description": "Obtener una carrera específica por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Carrera",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ingeniería en Sistemas Computacionales\",\n  \"duracion\": 9,\n  \"descripcion\": \"Carrera actualizada con enfoque en sistemas computacionales\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carrera",
+								"{{carreraId}}"
+							]
+						},
+						"description": "Actualizar los datos de una carrera existente"
+					}
+				},
+				{
+					"name": "Eliminar Carrera",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carrera",
+								"{{carreraId}}"
+							]
+						},
+						"description": "Eliminar una carrera por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de carreras universitarias"
+		},
+		{
+			"name": "Ciclos",
+			"item": [
+				{
+					"name": "Crear Ciclo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"2024-I\",\n  \"fechaInicio\": \"2024-03-15T00:00:00.000Z\",\n  \"fechaFin\": \"2024-07-15T23:59:59.000Z\",\n  \"activo\": true,\n  \"descripcion\": \"Primer ciclo académico del año 2024\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ciclo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ciclo"
+							]
+						},
+						"description": "Crear un nuevo ciclo académico"
+					}
+				},
+				{
+					"name": "Obtener Todos los Ciclos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ciclo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ciclo"
+							]
+						},
+						"description": "Obtener la lista de todos los ciclos académicos"
+					}
+				},
+				{
+					"name": "Obtener Ciclo por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ciclo",
+								"{{cicloId}}"
+							]
+						},
+						"description": "Obtener un ciclo académico específico por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Ciclo",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"2024-II\",\n  \"fechaInicio\": \"2024-08-15T00:00:00.000Z\",\n  \"fechaFin\": \"2024-12-15T23:59:59.000Z\",\n  \"activo\": false,\n  \"descripcion\": \"Segundo ciclo académico del año 2024\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ciclo",
+								"{{cicloId}}"
+							]
+						},
+						"description": "Actualizar los datos de un ciclo académico existente"
+					}
+				},
+				{
+					"name": "Eliminar Ciclo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ciclo",
+								"{{cicloId}}"
+							]
+						},
+						"description": "Eliminar un ciclo académico por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de ciclos académicos"
+		},
+		{
+			"name": "Docentes",
+			"item": [
+				{
+					"name": "Crear Docente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Rodriguez\",\n  \"email\": \"carlos.rodriguez@universidad.edu\",\n  \"telefono\": \"+51987654321\",\n  \"documento\": \"12345678\",\n  \"especialidad\": \"Ingeniería de Software\",\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/docente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"docente"
+							]
+						},
+						"description": "Crear un nuevo docente"
+					}
+				},
+				{
+					"name": "Obtener Todos los Docentes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/docente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"docente"
+							]
+						},
+						"description": "Obtener la lista de todos los docentes"
+					}
+				},
+				{
+					"name": "Obtener Docente por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/docente/{{docenteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"docente",
+								"{{docenteId}}"
+							]
+						},
+						"description": "Obtener un docente específico por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Docente",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Carlos Alberto\",\n  \"especialidad\": \"Arquitectura de Software\",\n  \"telefono\": \"+51987654322\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/docente/{{docenteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"docente",
+								"{{docenteId}}"
+							]
+						},
+						"description": "Actualizar los datos de un docente existente"
+					}
+				},
+				{
+					"name": "Eliminar Docente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/docente/{{docenteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"docente",
+								"{{docenteId}}"
+							]
+						},
+						"description": "Eliminar un docente por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de docentes"
+		},
+		{
+			"name": "Especialidades",
+			"item": [
+				{
+					"name": "Crear Especialidad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ingeniería de Software\",\n  \"codigo\": \"ISW\",\n  \"descripcion\": \"Especialidad enfocada en el desarrollo y mantenimiento de software\",\n  \"activa\": true,\n  \"carreraId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/especialidad",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"especialidad"
+							]
+						},
+						"description": "Crear una nueva especialidad"
+					}
+				},
+				{
+					"name": "Obtener Todas las Especialidades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/especialidad",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"especialidad"
+							]
+						},
+						"description": "Obtener la lista de todas las especialidades"
+					}
+				},
+				{
+					"name": "Obtener Especialidad por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"especialidad",
+								"{{especialidadId}}"
+							]
+						},
+						"description": "Obtener una especialidad específica por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Especialidad",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ingeniería de Software Avanzada\",\n  \"descripcion\": \"Especialidad actualizada con enfoque en tecnologías emergentes\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"especialidad",
+								"{{especialidadId}}"
+							]
+						},
+						"description": "Actualizar los datos de una especialidad existente"
+					}
+				},
+				{
+					"name": "Eliminar Especialidad",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"especialidad",
+								"{{especialidadId}}"
+							]
+						},
+						"description": "Eliminar una especialidad por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de especialidades"
+		},
+		{
+			"name": "Estudiantes",
+			"item": [
+				{
+					"name": "Crear Estudiante",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"García\",\n  \"email\": \"ana.garcia@estudiante.universidad.edu\",\n  \"telefono\": \"+51912345678\",\n  \"documento\": \"87654321\",\n  \"fechaNacimiento\": \"2000-05-15T00:00:00.000Z\",\n  \"direccion\": \"Av. Universitaria 123, Lima\",\n  \"codigoEstudiante\": \"2024001\",\n  \"carreraId\": 1,\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/estudiante",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estudiante"
+							]
+						},
+						"description": "Crear un nuevo estudiante"
+					}
+				},
+				{
+					"name": "Obtener Todos los Estudiantes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/estudiante",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estudiante"
+							]
+						},
+						"description": "Obtener la lista de todos los estudiantes"
+					}
+				},
+				{
+					"name": "Obtener Estudiante por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estudiante",
+								"{{estudianteId}}"
+							]
+						},
+						"description": "Obtener un estudiante específico por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Estudiante",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"telefono\": \"+51912345679\",\n  \"direccion\": \"Av. Universitaria 456, Lima\",\n  \"email\": \"ana.garcia.updated@estudiante.universidad.edu\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estudiante",
+								"{{estudianteId}}"
+							]
+						},
+						"description": "Actualizar los datos de un estudiante existente"
+					}
+				},
+				{
+					"name": "Eliminar Estudiante",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estudiante",
+								"{{estudianteId}}"
+							]
+						},
+						"description": "Eliminar un estudiante por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de estudiantes"
+		},
+		{
+			"name": "Materias",
+			"item": [
+				{
+					"name": "Crear Materia",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_materia\": 1,\n  \"nombre\": \"Programación I\",\n  \"codigo\": \"PROG101\",\n  \"creditos\": 4,\n  \"horas_semanales\": 6,\n  \"id_especialidad\": 1,\n  \"id_ciclo\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/materia",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materia"
+							]
+						},
+						"description": "Crear una nueva materia"
+					}
+				},
+				{
+					"name": "Obtener Todas las Materias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/materia",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materia"
+							]
+						},
+						"description": "Obtener la lista de todas las materias"
+					}
+				},
+				{
+					"name": "Obtener Materia por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/materia/{{materiaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materia",
+								"{{materiaId}}"
+							]
+						},
+						"description": "Obtener una materia específica por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Materia",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Programación Orientada a Objetos\",\n  \"creditos\": 5,\n  \"horas_semanales\": 8\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/materia/{{materiaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materia",
+								"{{materiaId}}"
+							]
+						},
+						"description": "Actualizar los datos de una materia existente"
+					}
+				},
+				{
+					"name": "Eliminar Materia",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/materia/{{materiaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materia",
+								"{{materiaId}}"
+							]
+						},
+						"description": "Eliminar una materia por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de materias"
+		},
+		{
+			"name": "Matrículas",
+			"item": [
+				{
+					"name": "Crear Matrícula",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_matricula\": 1,\n  \"id_estudiante\": 1,\n  \"id_materia\": 1,\n  \"fecha_matricula\": \"2024-03-15T00:00:00.000Z\",\n  \"calificacion\": 0,\n  \"estado\": \"Matriculado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matricula",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"matricula"
+							]
+						},
+						"description": "Crear una nueva matrícula"
+					}
+				},
+				{
+					"name": "Obtener Todas las Matrículas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matricula",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"matricula"
+							]
+						},
+						"description": "Obtener la lista de todas las matrículas"
+					}
+				},
+				{
+					"name": "Obtener Matrícula por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"matricula",
+								"{{matriculaId}}"
+							]
+						},
+						"description": "Obtener una matrícula específica por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Matrícula",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"calificacion\": 18,\n  \"estado\": \"Aprobado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"matricula",
+								"{{matriculaId}}"
+							]
+						},
+						"description": "Actualizar los datos de una matrícula existente"
+					}
+				},
+				{
+					"name": "Eliminar Matrícula",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"matricula",
+								"{{matriculaId}}"
+							]
+						},
+						"description": "Eliminar una matrícula por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de matrículas"
+		},
+		{
+			"name": "Asignaciones Docente-Materia",
+			"item": [
+				{
+					"name": "Crear Asignación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_asignacion\": 1,\n  \"id_docente\": 1,\n  \"id_materia\": 1,\n  \"grupo\": \"A\",\n  \"horario\": \"Lunes y Miércoles 08:00-10:00\",\n  \"fecha_asignacion\": \"2024-03-01T00:00:00.000Z\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/asignacion-docente-materia",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"asignacion-docente-materia"
+							]
+						},
+						"description": "Crear una nueva asignación de docente a materia"
+					}
+				},
+				{
+					"name": "Obtener Todas las Asignaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/asignacion-docente-materia",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"asignacion-docente-materia"
+							]
+						},
+						"description": "Obtener la lista de todas las asignaciones"
+					}
+				},
+				{
+					"name": "Obtener Asignación por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"asignacion-docente-materia",
+								"{{asignacionId}}"
+							]
+						},
+						"description": "Obtener una asignación específica por su ID"
+					}
+				},
+				{
+					"name": "Actualizar Asignación",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"grupo\": \"B\",\n  \"horario\": \"Martes y Jueves 10:00-12:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"asignacion-docente-materia",
+								"{{asignacionId}}"
+							]
+						},
+						"description": "Actualizar los datos de una asignación existente"
+					}
+				},
+				{
+					"name": "Eliminar Asignación",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"asignacion-docente-materia",
+								"{{asignacionId}}"
+							]
+						},
+						"description": "Eliminar una asignación por su ID"
+					}
+				}
+			],
+			"description": "Endpoints para la gestión de asignaciones docente-materia"
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Verificar Estado del Servidor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Verificar que el servidor esté funcionando correctamente"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000"
+		},
+		{
+			"key": "carreraId",
+			"value": "1",
+			"description": "ID de la carrera para operaciones específicas"
+		},
+		{
+			"key": "cicloId",
+			"value": "1",
+			"description": "ID del ciclo para operaciones específicas"
+		},
+		{
+			"key": "docenteId",
+			"value": "1",
+			"description": "ID del docente para operaciones específicas"
+		},
+		{
+			"key": "especialidadId",
+			"value": "1",
+			"description": "ID de la especialidad para operaciones específicas"
+		},
+		{
+			"key": "estudianteId",
+			"value": "1",
+			"description": "ID del estudiante para operaciones específicas"
+		},
+		{
+			"key": "materiaId",
+			"value": "1",
+			"description": "ID de la materia para operaciones específicas"
+		},
+		{
+			"key": "matriculaId",
+			"value": "1",
+			"description": "ID de la matrícula para operaciones específicas"
+		},
+		{
+			"key": "asignacionId",
+			"value": "1",
+			"description": "ID de la asignación para operaciones específicas"
+		}
+	]
+}
