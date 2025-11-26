@@ -1,0 +1,236 @@
+{
+  "info": {
+    "name": "Auth JWT - Control Universitario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Asegurar baseUrl","if (!pm.environment.get('baseUrl')) { pm.environment.set('baseUrl', pm.collectionVariables.get('baseUrl') || 'http://localhost:3000'); }",
+          "// Añadir Authorization automáticamente si existe token",
+          "const token = pm.environment.get('token');",
+          "if (token) {",
+          "  const hasAuth = pm.request.headers.has('Authorization');",
+          "  if (!hasAuth) { pm.request.headers.add({ key: 'Authorization', value: `Bearer ${token}` }); }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Registro exitoso', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+              "const r = pm.response.json();",
+              "if (r && r.access_token) {",
+              "  pm.environment.set('token', r.access_token);",
+              "  const uid = (r.user && (r.user.id || r.user.id_usuario)) || null;",
+              "  if (uid) pm.environment.set('userId', uid);",
+              "  if (r.user && r.user.role) pm.environment.set('role', r.user.role);",
+              "}",
+              "postman.setNextRequest('Login');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"123456\",\n  \"nombres\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"telefono\": \"987654321\",\n  \"role\": \"ADMIN\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login OK', () => pm.expect(pm.response.code).to.equal(200));",
+              "const r = pm.response.json();",
+              "if (r && r.access_token) {",
+              "  pm.environment.set('token', r.access_token);",
+              "  const uid = (r.user && (r.user.id || r.user.id_usuario)) || null;",
+              "  if (uid) pm.environment.set('userId', uid);",
+              "  if (r.user && r.user.role) pm.environment.set('role', r.user.role);",
+              "}",
+              "postman.setNextRequest('Profile');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Profile",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get('token')) { throw new Error('No hay token. Primero haz login/registro.'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Profile OK', () => pm.expect(pm.response.code).to.equal(200));",
+              "const user = pm.response.json();",
+              "pm.test('Incluye email y rol', () => { pm.expect(user.email).to.exist; pm.expect(user.role).to.exist; });",
+              "pm.test('Incluye nombres/apellidos si están presentes', () => { pm.expect(user.nombres).to.be.ok; });",
+              "postman.setNextRequest(null);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "profile"]
+        }
+      }
+    },
+    {
+      "name": "Clear Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.unset('token');",
+              "pm.environment.unset('userId');",
+              "pm.environment.unset('role');",
+              "pm.test('Token eliminado', () => pm.expect(pm.environment.get('token')).to.not.exist);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/clear-token",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "clear-token"]
+        }
+      }
+    }
+    ,
+    {
+      "name": "Protected - Invalid Token",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Forzar token inválido en header",
+              "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer invalid_token_value' });"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('401 con token inválido', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "profile"]
+        }
+      }
+    }
+    ,
+    {
+      "name": "Protected - No Token",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Remover Authorization incluso si el pre-request de la colección lo añadió",
+              "pm.request.headers.remove('Authorization');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('401 sin token', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "profile"]
+        }
+      }
+    }
+  ]
+}

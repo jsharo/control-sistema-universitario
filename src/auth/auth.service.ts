@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UserRole } from '../../generated/prisma';
+type UserRoleValue = 'ESTUDIANTE' | 'DOCENTE' | 'ADMIN' | 'COORDINADOR';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -50,10 +50,11 @@ export class AuthService {
       throw new UnauthorizedException('El usuario ya existe');
     }
 
-    // Convertir el rol string a enum si es válido
-    let userRole: UserRole = UserRole.ESTUDIANTE; // Default
-    if (registerDto.role && Object.values(UserRole).includes(registerDto.role as UserRole)) {
-      userRole = registerDto.role as UserRole;
+  
+    const VALID_ROLES: UserRoleValue[] = ['ESTUDIANTE','DOCENTE','ADMIN','COORDINADOR'];
+    let userRole: UserRoleValue = 'ESTUDIANTE'; // Default
+    if (registerDto.role && VALID_ROLES.includes(registerDto.role as UserRoleValue)) {
+      userRole = registerDto.role as UserRoleValue;
     }
 
     const user = await this.usersService.create({
