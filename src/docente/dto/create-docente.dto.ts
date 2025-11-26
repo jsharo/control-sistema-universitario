@@ -1,9 +1,9 @@
 export class CreateDocenteDto {
-  nombre: string;
-  apellido: string;
-  email: string;
+  codigo_docente: string;
+  nombres: string;
+  apellidos: string;
+  email?: string;
   telefono?: string;
-  documento: string; // DNI, cédula, etc.
-  especialidad: string;
-  activo: boolean;
+  especialidad?: string;
+  estado?: 'activo' | 'inactivo';
 }

@@ -1,41 +1,72 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMateriaDto } from './dto/create-materia.dto';
 import { UpdateMateriaDto } from './dto/update-materia.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MateriaService {
-  private materias: (CreateMateriaDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createMateriaDto: CreateMateriaDto): (CreateMateriaDto & { id: number }) {
-    const materia = { id: this.id++, ...createMateriaDto };
-    this.materias.push(materia);
-    return materia;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createMateriaDto: CreateMateriaDto) {
+    return await this.prisma.materia.create({
+      data: createMateriaDto
+    });
   }
 
-  findAll(): (CreateMateriaDto & { id: number })[] {
-    return this.materias;
+  async findAll() {
+    return await this.prisma.materia.findMany({
+      include: {
+        especialidad: {
+          include: {
+            carrera: true
+          }
+        },
+        ciclo: true
+      },
+      orderBy: {
+        id_materia: 'asc'
+      }
+    });
   }
 
-  findOne(id: number): (CreateMateriaDto & { id: number }) | undefined {
-    return this.materias.find(materia => materia.id === id);
+  async findOne(id: number) {
+    return await this.prisma.materia.findUnique({
+      where: { id_materia: id },
+      include: {
+        especialidad: {
+          include: {
+            carrera: true
+          }
+        },
+        ciclo: true
+      }
+    });
   }
 
-  update(id: number, updateMateriaDto: UpdateMateriaDto): (CreateMateriaDto & { id: number }) | null {
-    const index = this.materias.findIndex(materia => materia.id === id);
-    if (index !== -1) {
-      const updated = { ...this.materias[index], ...updateMateriaDto } as (CreateMateriaDto & { id: number });
-      this.materias[index] = updated;
-      return updated;
+  async update(id: number, updateMateriaDto: UpdateMateriaDto) {
+    await this.findOne(id);
+    if (updateMateriaDto.codigo) {
+      const existente = await this.prisma.materia.findFirst({
+        where: {
+          codigo: updateMateriaDto.codigo,
+          NOT: { id_materia: id }
+        }
+      });
+      if (existente) {
+        throw new Error('Ya existe una materia con ese código.');
+      }
     }
-    return null;
+    return await this.prisma.materia.update({
+      where: { id_materia: id },
+      data: updateMateriaDto
+    });
   }
 
-  remove(id: number): (CreateMateriaDto & { id: number }) | null {
-    const index = this.materias.findIndex(materia => materia.id === id);
-    if (index !== -1) {
-      return this.materias.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return await this.prisma.materia.delete({
+      where: { id_materia: id }
+    });
   }
 }

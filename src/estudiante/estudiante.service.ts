@@ -1,41 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EstudianteService {
-  private estudiantes: (CreateEstudianteDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createEstudianteDto: CreateEstudianteDto): (CreateEstudianteDto & { id: number }) {
-    const estudiante = { id: this.id++, ...createEstudianteDto };
-    this.estudiantes.push(estudiante);
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(createEstudianteDto: CreateEstudianteDto) {
+    return this.prisma.estudiante.create({
+      data: createEstudianteDto
+    });
+  }
+
+  findAll() {
+    return this.prisma.estudiante.findMany();
+  }
+
+  async findOne(id: number) {
+    const estudiante = await this.prisma.estudiante.findUnique({
+      where: { id_estudiante: id }
+    });
+    if (!estudiante) {
+      throw new NotFoundException(`Estudiante con ID ${id} no encontrado`);
+    }
     return estudiante;
   }
 
-  findAll(): (CreateEstudianteDto & { id: number })[] {
-    return this.estudiantes;
-  }
-
-  findOne(id: number): (CreateEstudianteDto & { id: number }) | undefined {
-    return this.estudiantes.find(estudiante => estudiante.id === id);
-  }
-
-  update(id: number, updateEstudianteDto: UpdateEstudianteDto): (CreateEstudianteDto & { id: number }) | null {
-    const index = this.estudiantes.findIndex(estudiante => estudiante.id === id);
-    if (index !== -1) {
-      const updated = { ...this.estudiantes[index], ...updateEstudianteDto } as (CreateEstudianteDto & { id: number });
-      this.estudiantes[index] = updated;
-      return updated;
+  async update(id: number, updateEstudianteDto: UpdateEstudianteDto) {
+    await this.findOne(id);
+    if (updateEstudianteDto.codigo_estudiante) {
+      const existente = await this.prisma.estudiante.findFirst({
+        where: {
+          codigo_estudiante: updateEstudianteDto.codigo_estudiante,
+          NOT: { id_estudiante: id }
+        }
+      });
+      if (existente) {
+        throw new Error('Ya existe un estudiante con ese código.');
+      }
     }
-    return null;
+    return this.prisma.estudiante.update({
+      where: { id_estudiante: id },
+      data: updateEstudianteDto
+    });
   }
 
-  remove(id: number): (CreateEstudianteDto & { id: number }) | null {
-    const index = this.estudiantes.findIndex(estudiante => estudiante.id === id);
-    if (index !== -1) {
-      return this.estudiantes.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.estudiante.delete({
+      where: { id_estudiante: id }
+    });
   }
 }

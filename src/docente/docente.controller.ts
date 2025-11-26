@@ -18,17 +18,17 @@ export class DocenteController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.docenteService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDocenteDto: UpdateDocenteDto) {
+  async update(@Param('id') id: string, @Body() updateDocenteDto: UpdateDocenteDto) {
     return this.docenteService.update(+id, updateDocenteDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.docenteService.remove(+id);
   }
 }

@@ -18,17 +18,17 @@ export class MateriaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.materiaService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMateriaDto: UpdateMateriaDto) {
+  async update(@Param('id') id: string, @Body() updateMateriaDto: UpdateMateriaDto) {
     return this.materiaService.update(+id, updateMateriaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.materiaService.remove(+id);
   }
 }

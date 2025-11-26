@@ -1,41 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { UpdateMatriculaDto } from './dto/update-matricula.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MatriculaService {
-  private matriculas: (CreateMatriculaDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createMatriculaDto: CreateMatriculaDto): (CreateMatriculaDto & { id: number }) {
-    const matricula = { id: this.id++, ...createMatriculaDto };
-    this.matriculas.push(matricula);
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(createMatriculaDto: CreateMatriculaDto) {
+    return this.prisma.matricula.create({
+      data: createMatriculaDto
+    });
+  }
+
+  findAll() {
+    return this.prisma.matricula.findMany();
+  }
+
+  async findOne(id: number) {
+    const matricula = await this.prisma.matricula.findUnique({
+      where: { id_matricula: id }
+    });
+    if (!matricula) {
+      throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+    }
     return matricula;
   }
 
-  findAll(): (CreateMatriculaDto & { id: number })[] {
-    return this.matriculas;
+  async update(id: number, updateMatriculaDto: UpdateMatriculaDto) {
+    await this.findOne(id);
+    return this.prisma.matricula.update({
+      where: { id_matricula: id },
+      data: updateMatriculaDto
+    });
   }
 
-  findOne(id: number): (CreateMatriculaDto & { id: number }) | undefined {
-    return this.matriculas.find(matricula => matricula.id === id);
-  }
-
-  update(id: number, updateMatriculaDto: UpdateMatriculaDto): (CreateMatriculaDto & { id: number }) | null {
-    const index = this.matriculas.findIndex(matricula => matricula.id === id);
-    if (index !== -1) {
-      const updated = { ...this.matriculas[index], ...updateMatriculaDto } as (CreateMatriculaDto & { id: number });
-      this.matriculas[index] = updated;
-      return updated;
-    }
-    return null;
-  }
-
-  remove(id: number): (CreateMatriculaDto & { id: number }) | null {
-    const index = this.matriculas.findIndex(matricula => matricula.id === id);
-    if (index !== -1) {
-      return this.matriculas.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.matricula.delete({
+      where: { id_matricula: id }
+    });
   }
 }

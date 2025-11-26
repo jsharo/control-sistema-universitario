@@ -18,17 +18,17 @@ export class MatriculaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.matriculaService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMatriculaDto: UpdateMatriculaDto) {
+  async update(@Param('id') id: string, @Body() updateMatriculaDto: UpdateMatriculaDto) {
     return this.matriculaService.update(+id, updateMatriculaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.matriculaService.remove(+id);
   }
 }

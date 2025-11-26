@@ -1,41 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { CreateEspecialidadDto } from './dto/create-especialidad.dto';
 import { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EspecialidadService {
-  private especialidades: (CreateEspecialidadDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createEspecialidadDto: CreateEspecialidadDto): (CreateEspecialidadDto & { id: number }) {
-    const especialidad = { id: this.id++, ...createEspecialidadDto };
-    this.especialidades.push(especialidad);
-    return especialidad;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createEspecialidadDto: CreateEspecialidadDto) {
+    return await this.prisma.especialidad.create({
+      data: createEspecialidadDto
+    });
   }
 
-  findAll(): (CreateEspecialidadDto & { id: number })[] {
-    return this.especialidades;
+  async findAll() {
+    return await this.prisma.especialidad.findMany({
+      include: {
+        carrera: true
+      },
+      orderBy: {
+        id_especialidad: 'asc'
+      }
+    });
   }
 
-  findOne(id: number): (CreateEspecialidadDto & { id: number }) | undefined {
-    return this.especialidades.find(especialidad => especialidad.id === id);
+  async findOne(id: number) {
+    return await this.prisma.especialidad.findUnique({
+      where: { id_especialidad: id },
+      include: {
+        carrera: true
+      }
+    });
   }
 
-  update(id: number, updateEspecialidadDto: UpdateEspecialidadDto): (CreateEspecialidadDto & { id: number }) | null {
-    const index = this.especialidades.findIndex(especialidad => especialidad.id === id);
-    if (index !== -1) {
-      const updated = { ...this.especialidades[index], ...updateEspecialidadDto } as (CreateEspecialidadDto & { id: number });
-      this.especialidades[index] = updated;
-      return updated;
+  async update(id: number, updateEspecialidadDto: UpdateEspecialidadDto) {
+    await this.findOne(id);
+    if (updateEspecialidadDto.nombre) {
+      const existente = await this.prisma.especialidad.findFirst({
+        where: {
+          nombre: updateEspecialidadDto.nombre,
+          NOT: { id_especialidad: id }
+        }
+      });
+      if (existente) {
+        throw new Error('Ya existe una especialidad con ese nombre.');
+      }
     }
-    return null;
+    return await this.prisma.especialidad.update({
+      where: { id_especialidad: id },
+      data: updateEspecialidadDto
+    });
   }
 
-  remove(id: number): (CreateEspecialidadDto & { id: number }) | null {
-    const index = this.especialidades.findIndex(especialidad => especialidad.id === id);
-    if (index !== -1) {
-      return this.especialidades.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return await this.prisma.especialidad.delete({
+      where: { id_especialidad: id }
+    });
   }
 }

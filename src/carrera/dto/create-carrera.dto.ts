@@ -1,5 +1,6 @@
 export class CreateCarreraDto {
   nombre: string;
-  duracion: number;
+  duracion_semestres?: number;
   descripcion?: string;
+  estado?: 'activo' | 'inactivo';
 }

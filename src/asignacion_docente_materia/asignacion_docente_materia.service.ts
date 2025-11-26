@@ -1,41 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAsignacionDocenteMateriaDto } from './dto/create-asignacion_docente_materia.dto';
 import { UpdateAsignacionDocenteMateriaDto } from './dto/update-asignacion_docente_materia.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AsignacionDocenteMateriaService {
-  private asignaciones: (CreateAsignacionDocenteMateriaDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createAsignacionDocenteMateriaDto: CreateAsignacionDocenteMateriaDto): (CreateAsignacionDocenteMateriaDto & { id: number }) {
-    const asignacion = { id: this.id++, ...createAsignacionDocenteMateriaDto };
-    this.asignaciones.push(asignacion);
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(createAsignacionDocenteMateriaDto: CreateAsignacionDocenteMateriaDto) {
+    return this.prisma.asignacionDocenteMateria.create({
+      data: createAsignacionDocenteMateriaDto
+    });
+  }
+
+  findAll() {
+    return this.prisma.asignacionDocenteMateria.findMany();
+  }
+
+  async findOne(id: number) {
+    const asignacion = await this.prisma.asignacionDocenteMateria.findUnique({
+      where: { id_asignacion: id }
+    });
+    if (!asignacion) {
+      throw new NotFoundException(`Asignación con ID ${id} no encontrada`);
+    }
     return asignacion;
   }
 
-  findAll(): (CreateAsignacionDocenteMateriaDto & { id: number })[] {
-    return this.asignaciones;
+  async update(id: number, updateAsignacionDocenteMateriaDto: UpdateAsignacionDocenteMateriaDto) {
+    await this.findOne(id); 
+    return this.prisma.asignacionDocenteMateria.update({
+      where: { id_asignacion: id },
+      data: updateAsignacionDocenteMateriaDto
+    });
   }
 
-  findOne(id: number): (CreateAsignacionDocenteMateriaDto & { id: number }) | undefined {
-    return this.asignaciones.find(asignacion => asignacion.id === id);
-  }
-
-  update(id: number, updateAsignacionDocenteMateriaDto: UpdateAsignacionDocenteMateriaDto): (CreateAsignacionDocenteMateriaDto & { id: number }) | null {
-    const index = this.asignaciones.findIndex(asignacion => asignacion.id === id);
-    if (index !== -1) {
-      const updated = { ...this.asignaciones[index], ...updateAsignacionDocenteMateriaDto } as (CreateAsignacionDocenteMateriaDto & { id: number });
-      this.asignaciones[index] = updated;
-      return updated;
-    }
-    return null;
-  }
-
-  remove(id: number): (CreateAsignacionDocenteMateriaDto & { id: number }) | null {
-    const index = this.asignaciones.findIndex(asignacion => asignacion.id === id);
-    if (index !== -1) {
-      return this.asignaciones.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.asignacionDocenteMateria.delete({
+      where: { id_asignacion: id }
+    });
   }
 }

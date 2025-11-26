@@ -13,22 +13,22 @@ export class CarreraController{
   }
 
   @Get()
-  finAll(){
+  findAll(){
     return this.carreraService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string){ 
+  async findOne(@Param('id') id: string){ 
     return this.carreraService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarreraDto: UpdateCarreraDto){
+  async update(@Param('id') id: string, @Body() updateCarreraDto: UpdateCarreraDto){
     return this.carreraService.update(+id, updateCarreraDto)
   }
 
   @Delete(':id')
-  remove (@Param('id') id: string){
+  async remove (@Param('id') id: string){
     return this.carreraService.remove(+id);
   }
 }

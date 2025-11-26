@@ -18,17 +18,17 @@ export class CicloController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.cicloService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCicloDto: UpdateCicloDto) {
+  async update(@Param('id') id: string, @Body() updateCicloDto: UpdateCicloDto) {
     return this.cicloService.update(+id, updateCicloDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.cicloService.remove(+id);
   }
 }

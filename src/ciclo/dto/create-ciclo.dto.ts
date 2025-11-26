@@ -1,7 +1,6 @@
 export class CreateCicloDto {
   nombre: string; 
-  fechaInicio: Date;
-  fechaFin: Date;
-  activo: boolean;
-  descripcion?: string; 
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  estado?: 'activo' | 'inactivo';
 }

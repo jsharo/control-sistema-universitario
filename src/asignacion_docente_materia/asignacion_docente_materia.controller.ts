@@ -18,17 +18,17 @@ export class AsignacionDocenteMateriaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.asignacionDocenteMateriaService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAsignacionDocenteMateriaDto: UpdateAsignacionDocenteMateriaDto) {
+  async update(@Param('id') id: string, @Body() updateAsignacionDocenteMateriaDto: UpdateAsignacionDocenteMateriaDto) {
     return this.asignacionDocenteMateriaService.update(+id, updateAsignacionDocenteMateriaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.asignacionDocenteMateriaService.remove(+id);
   }
 }

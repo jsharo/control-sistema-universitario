@@ -1,41 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCicloDto } from './dto/create-ciclo.dto';
 import { UpdateCicloDto } from './dto/update-ciclo.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CicloService {
-  private ciclos: (CreateCicloDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createCicloDto: CreateCicloDto): (CreateCicloDto & { id: number }) {
-    const ciclo = { id: this.id++, ...createCicloDto };
-    this.ciclos.push(ciclo);
-    return ciclo;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createCicloDto: CreateCicloDto) {
+    return await this.prisma.ciclo.create({
+      data: createCicloDto
+    });
   }
 
-  findAll(): (CreateCicloDto & { id: number })[] {
-    return this.ciclos;
+  async findAll() {
+    return await this.prisma.ciclo.findMany({
+      orderBy: {
+        id_ciclo: 'asc'
+      }
+    });
   }
 
-  findOne(id: number): (CreateCicloDto & { id: number }) | undefined {
-    return this.ciclos.find(ciclo => ciclo.id === id);
+  async findOne(id: number) {
+    return await this.prisma.ciclo.findUnique({
+      where: { id_ciclo: id }
+    });
   }
 
-  update(id: number, updateCicloDto: UpdateCicloDto): (CreateCicloDto & { id: number }) | null {
-    const index = this.ciclos.findIndex(ciclo => ciclo.id === id);
-    if (index !== -1) {
-      const updated = { ...this.ciclos[index], ...updateCicloDto } as (CreateCicloDto & { id: number });
-      this.ciclos[index] = updated;
-      return updated;
+  async update(id: number, updateCicloDto: UpdateCicloDto) {
+    await this.findOne(id);
+    if (updateCicloDto.nombre) {
+      const existente = await this.prisma.ciclo.findFirst({
+        where: {
+          nombre: updateCicloDto.nombre,
+          NOT: { id_ciclo: id }
+        }
+      });
+      if (existente) {
+        throw new Error('Ya existe un ciclo con ese nombre.');
+      }
     }
-    return null;
+    return await this.prisma.ciclo.update({
+      where: { id_ciclo: id },
+      data: updateCicloDto
+    });
   }
 
-  remove(id: number): (CreateCicloDto & { id: number }) | null {
-    const index = this.ciclos.findIndex(ciclo => ciclo.id === id);
-    if (index !== -1) {
-      return this.ciclos.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return await this.prisma.ciclo.delete({
+      where: { id_ciclo: id }
+    });
   }
 }

@@ -1,41 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDocenteDto } from './dto/create-docente.dto';
 import { UpdateDocenteDto } from './dto/update-docente.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class DocenteService {
-  private docentes: (CreateDocenteDto & { id: number })[] = [];
-  private id = 1;
 
-  create(createDocenteDto: CreateDocenteDto): (CreateDocenteDto & { id: number }) {
-    const docente = { id: this.id++, ...createDocenteDto };
-    this.docentes.push(docente);
-    return docente;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createDocenteDto: CreateDocenteDto) {
+    return await this.prisma.docente.create({
+      data: createDocenteDto
+    });
   }
 
-  findAll(): (CreateDocenteDto & { id: number })[] {
-    return this.docentes;
+  async findAll() {
+    return await this.prisma.docente.findMany({
+      orderBy: {
+        id_docente: 'asc'
+      }
+    });
   }
 
-  findOne(id: number): (CreateDocenteDto & { id: number }) | undefined {
-    return this.docentes.find(docente => docente.id === id);
+  async findOne(id: number) {
+    return await this.prisma.docente.findUnique({
+      where: { id_docente: id }
+    });
   }
 
-  update(id: number, updateDocenteDto: UpdateDocenteDto): (CreateDocenteDto & { id: number }) | null {
-    const index = this.docentes.findIndex(docente => docente.id === id);
-    if (index !== -1) {
-      const updated = { ...this.docentes[index], ...updateDocenteDto } as (CreateDocenteDto & { id: number });
-      this.docentes[index] = updated;
-      return updated;
+  async update(id: number, updateDocenteDto: UpdateDocenteDto) {
+    await this.findOne(id);
+    if (updateDocenteDto.codigo_docente) {
+      const existente = await this.prisma.docente.findFirst({
+        where: {
+          codigo_docente: updateDocenteDto.codigo_docente,
+          NOT: { id_docente: id }
+        }
+      });
+      if (existente) {
+        throw new Error('Ya existe un docente con ese código.');
+      }
     }
-    return null;
+    return await this.prisma.docente.update({
+      where: { id_docente: id },
+      data: updateDocenteDto
+    });
   }
 
-  remove(id: number): (CreateDocenteDto & { id: number }) | null {
-    const index = this.docentes.findIndex(docente => docente.id === id);
-    if (index !== -1) {
-      return this.docentes.splice(index, 1)[0];
-    }
-    return null;
+  async remove(id: number) {
+    await this.findOne(id);
+    return await this.prisma.docente.delete({
+      where: { id_docente: id }
+    });
   }
 }
