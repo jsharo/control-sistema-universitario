@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/gestion"
+}
+
+datasource dbGestion {
+  provider = "postgresql"
+}
+
+// Gestión: tablas de orquestación y asignaciones entre dominios
+// No usar claves foráneas hacia otras BDs; almacenar IDs opacos
+
+model UsuarioCarrera {
+  id_usuario_carrera Int      @id @default(autoincrement())
+  usuarioId          Int      // ID del Usuario en Auth (sin FK)
+  carreraId          Int      // ID de Carrera en Académico (sin FK)
+  fecha_asignacion   DateTime @default(now())
+
+  @@unique([usuarioId, carreraId], name: "unique_usuario_carrera")
+  @@map("usuario_carrera")
+}
+
+model UsuarioMateria {
+  id_usuario_materia Int      @id @default(autoincrement())
+  usuarioId          Int      // ID del Usuario en Auth (sin FK)
+  materiaId          Int      // ID de Materia en Académico (sin FK)
+  fecha_asignacion   DateTime @default(now())
+
+  @@unique([usuarioId, materiaId], name: "unique_usuario_materia")
+  @@map("usuario_materia")
+}

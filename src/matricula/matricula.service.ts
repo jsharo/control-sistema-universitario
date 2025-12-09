@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { UpdateMatriculaDto } from './dto/update-matricula.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Injectable()
 export class MatriculaService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AcademicoPrismaService) {}
 
   create(createMatriculaDto: CreateMatriculaDto) {
     return this.prisma.matricula.create({

@@ -1,25 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Injectable()
 export class EstudianteService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AcademicoPrismaService) {}
 
   create(createEstudianteDto: CreateEstudianteDto) {
-    return this.prisma.estudiante.create({
+    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+      return this.prisma.estudiante.create({
       data: createEstudianteDto
     });
   }
 
   findAll() {
-    return this.prisma.estudiante.findMany();
+    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+      return this.prisma.estudiante.findMany();
   }
 
   async findOne(id: number) {
-    const estudiante = await this.prisma.estudiante.findUnique({
+    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+      const estudiante = await this.prisma.estudiante.findUnique({
       where: { id_estudiante: id }
     });
     if (!estudiante) {
@@ -31,7 +34,8 @@ export class EstudianteService {
   async update(id: number, updateEstudianteDto: UpdateEstudianteDto) {
     await this.findOne(id);
     if (updateEstudianteDto.codigo_estudiante) {
-      const existente = await this.prisma.estudiante.findFirst({
+      if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+        const existente = await this.prisma.estudiante.findFirst({
         where: {
           codigo_estudiante: updateEstudianteDto.codigo_estudiante,
           NOT: { id_estudiante: id }
@@ -41,7 +45,8 @@ export class EstudianteService {
         throw new Error('Ya existe un estudiante con ese código.');
       }
     }
-    return this.prisma.estudiante.update({
+    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+      return this.prisma.estudiante.update({
       where: { id_estudiante: id },
       data: updateEstudianteDto
     });
@@ -49,7 +54,8 @@ export class EstudianteService {
 
   async remove(id: number) {
     await this.findOne(id);
-    return this.prisma.estudiante.delete({
+    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
+      return this.prisma.estudiante.delete({
       where: { id_estudiante: id }
     });
   }

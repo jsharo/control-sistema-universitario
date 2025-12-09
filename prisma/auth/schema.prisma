@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/auth"
+}
+
+datasource dbAuth {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id_usuario      Int       @id @default(autoincrement())
+  email           String    @unique @dbAuth.VarChar(100)
+  password        String    @dbAuth.VarChar(255)
+  nombres         String?   @dbAuth.VarChar(100)
+  apellidos       String?   @dbAuth.VarChar(100)
+  telefono        String?   @dbAuth.VarChar(20)
+  role            String    @default("ESTUDIANTE") @dbAuth.VarChar(50)
+  fecha_creacion  DateTime  @default(now())
+  activo          Boolean   @default(true)
+
+  @@map("usuario")
+}
+
+model Roles {
+  id_rol        Int            @id @default(autoincrement())
+  nombre        String         @unique @dbAuth.VarChar(50)
+  descripcion   String?        @dbAuth.VarChar(255)
+  rolesPermisos RolesPermisos[]
+
+  @@map("roles")
+}
+
+model Permisos {
+  id_permiso    Int            @id @default(autoincrement())
+  nombre        String         @unique @dbAuth.VarChar(50)
+  descripcion   String?        @dbAuth.VarChar(255)
+  rolesPermisos RolesPermisos[]
+
+  @@map("permisos")
+}
+
+model RolesPermisos {
+  id_rol_permiso Int      @id @default(autoincrement())
+  id_rol         Int
+  id_permiso     Int
+  rol            Roles    @relation(fields: [id_rol], references: [id_rol], onDelete: Cascade)
+  permiso        Permisos @relation(fields: [id_permiso], references: [id_permiso], onDelete: Cascade)
+
+  @@unique([id_rol, id_permiso], name: "unique_rol_permiso")
+  @@map("roles_permisos")
+}

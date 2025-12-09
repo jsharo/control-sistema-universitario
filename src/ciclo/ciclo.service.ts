@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCicloDto } from './dto/create-ciclo.dto';
 import { UpdateCicloDto } from './dto/update-ciclo.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Injectable()
 export class CicloService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AcademicoPrismaService) {}
 
   async create(createCicloDto: CreateCicloDto) {
     return await this.prisma.ciclo.create({

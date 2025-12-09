@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAsignacionDocenteMateriaDto } from './dto/create-asignacion_docente_materia.dto';
 import { UpdateAsignacionDocenteMateriaDto } from './dto/update-asignacion_docente_materia.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Injectable()
 export class AsignacionDocenteMateriaService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AcademicoPrismaService) {}
 
   create(createAsignacionDocenteMateriaDto: CreateAsignacionDocenteMateriaDto) {
     return this.prisma.asignacionDocenteMateria.create({

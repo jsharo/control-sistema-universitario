@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { EspecialidadService } from './especialidad.service';
 import { EspecialidadController } from './especialidad.controller';
-import { PrismaService } from '../prisma/prisma.service';
+import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Module({
   controllers: [EspecialidadController],
-  providers: [EspecialidadService, PrismaService],
+  providers: [EspecialidadService, AcademicoPrismaService],
 })
 export class EspecialidadModule {}

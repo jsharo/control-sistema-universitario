@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateCarreraDto } from './dto/create-carrera.dto';
 import { UpdateCarreraDto } from './dto/update-carrera.dto';
-import { PrismaService } from "../prisma/prisma.service";
+import { AcademicoPrismaService } from "src/prisma/academico.prisma.service";
 
 @Injectable()
 export class CarreraService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AcademicoPrismaService) {}
 
   async create(createCarreraDto: CreateCarreraDto) {
     return await this.prisma.carrera.create({

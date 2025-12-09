@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { AuthPrismaService } from 'src/prisma/auth.prisma.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: AuthPrismaService) {}
 
   async findByEmail(email: string) {
     return this.prisma.usuario.findUnique({

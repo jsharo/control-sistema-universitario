@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/academico"
+}
+
+datasource dbAcademico {
+  provider = "postgresql"
+}
+
+model Carrera {
+  id_carrera         Int               @id @default(autoincrement())
+  nombre             String            @unique @dbAcademico.VarChar(100)
+  descripcion        String?
+  duracion_semestres Int?
+  estado             String            @default("activo") @dbAcademico.VarChar(20)
+  especialidades     Especialidad[]
+  estudiantes        Estudiante[]
+
+  @@map("carrera")
+}
+
+model Especialidad {
+  id_especialidad Int       @id @default(autoincrement())
+  nombre          String    @dbAcademico.VarChar(100)
+  id_carrera      Int
+  carrera         Carrera   @relation(fields: [id_carrera], references: [id_carrera], onDelete: Cascade)
+  materias        Materia[]
+
+  @@map("especialidad")
+}
+
+model Ciclo {
+  id_ciclo     Int           @id @default(autoincrement())
+  nombre       String        @dbAcademico.VarChar(50)
+  fecha_inicio DateTime
+  fecha_fin    DateTime
+  estado       EstadoGeneral @default(activo)
+  materias     Materia[]
+
+  @@map("ciclo")
+}
+
+enum EstadoGeneral {
+  activo
+  inactivo
+}
+
+model Materia {
+  id_materia           Int                        @id @default(autoincrement())
+  nombre               String                     @dbAcademico.VarChar(150)
+  codigo               String                     @unique @dbAcademico.VarChar(20)
+  creditos             Int
+  horas_semanales      Int?
+  id_especialidad      Int
+  id_ciclo             Int
+  asignacionesDocentes AsignacionDocenteMateria[]
+  ciclo                Ciclo                      @relation(fields: [id_ciclo], references: [id_ciclo], onDelete: Cascade)
+  especialidad         Especialidad               @relation(fields: [id_especialidad], references: [id_especialidad], onDelete: Cascade)
+  matriculas           Matricula[]
+
+  @@map("materia")
+}
+
+model Docente {
+  id_docente           Int                        @id @default(autoincrement())
+  codigo_docente       String                     @unique @dbAcademico.VarChar(20)
+  nombres              String                     @dbAcademico.VarChar(100)
+  apellidos            String                     @dbAcademico.VarChar(100)
+  email                String?                    @unique @dbAcademico.VarChar(150)
+  telefono             String?                    @dbAcademico.VarChar(15)
+  especialidad         String?                    @dbAcademico.VarChar(100)
+  estado               String                     @default("activo") @dbAcademico.VarChar(20)
+  asignacionesMaterias AsignacionDocenteMateria[]
+
+  @@map("docente")
+}
+
+model Estudiante {
+  id_estudiante     Int         @id @default(autoincrement())
+  codigo_estudiante String      @unique @dbAcademico.VarChar(20)
+  nombres           String      @dbAcademico.VarChar(100)
+  apellidos         String      @dbAcademico.VarChar(100)
+  email             String?     @unique @dbAcademico.VarChar(150)
+  telefono          String?     @dbAcademico.VarChar(15)
+  fecha_ingreso     DateTime?
+  id_carrera        Int
+  estado            String      @default("activo") @dbAcademico.VarChar(20)
+  carrera           Carrera     @relation(fields: [id_carrera], references: [id_carrera], onDelete: Cascade)
+  matriculas        Matricula[]
+
+  @@map("estudiante")
+}
+
+model AsignacionDocenteMateria {
+  id_asignacion    Int      @id @default(autoincrement())
+  id_docente       Int
+  id_materia       Int
+  grupo            String?  @dbAcademico.VarChar(10)
+  horario          String?
+  fecha_asignacion DateTime @default(now())
+  docente          Docente  @relation(fields: [id_docente], references: [id_docente], onDelete: Cascade)
+  materia          Materia  @relation(fields: [id_materia], references: [id_materia], onDelete: Cascade)
+
+  @@unique([id_docente, id_materia, grupo], name: "unique_docente_materia_grupo")
+  @@map("asignacion_docente_materia")
+}
+
+model Matricula {
+  id_matricula    Int        @id @default(autoincrement())
+  id_estudiante   Int
+  id_materia      Int
+  fecha_matricula DateTime   @default(now())
+  calificacion    Float?
+  estado          String     @default("cursando") @dbAcademico.VarChar(20)
+  estudiante      Estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade)
+  materia         Materia    @relation(fields: [id_materia], references: [id_materia], onDelete: Cascade)
+
+  @@unique([id_estudiante, id_materia], name: "unique_estudiante_materia")
+  @@map("matricula")
+}
