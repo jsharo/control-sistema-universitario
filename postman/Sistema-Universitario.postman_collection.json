@@ -1,1188 +1,621 @@
 {
-	"info": {
-		"_postman_id": "sistema-universitario-2024",
-		"name": "Sistema Universitario API",
-		"description": "API completa para gestión universitaria con base de datos.\n\nIMPORTANTE:\n- No elimines entidades base (Carrera, Ciclo, Especialidad, Docente, Estudiante) si existen dependencias.\n- Los requests de eliminación de estas entidades están deshabilitados para evitar errores de integridad referencial.\n- Ejecuta los requests en el orden: Carrera → Ciclo → Especialidad → Docente → Estudiante → Materia → Asignación → Matrícula.\n- Si eliminas una entidad base, actualiza los IDs en el entorno antes de crear dependientes.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "🏫 Carreras",
-			"item": [
-				{
-					"name": "Crear Carrera",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/carrera',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var nombre = 'Ingeniería en Sistemas';",
-									"        var existentes = res.json().filter(function(c) { return c.nombre === nombre });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('carreraId', existentes[0].id_carrera);",
-									"            postman.setNextRequest('Obtener Todas las Carreras');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_carrera;",
-									"    if (id) {",
-									"        pm.environment.set('carreraId', id);",
-									"        postman.setNextRequest('Obtener Todas las Carreras');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_carrera válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear carrera.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Ingeniería en Sistemas\",\n  \"descripcion\": \"Carrera enfocada en desarrollo de software y tecnología\",\n  \"duracion_semestres\": 10\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/carrera",
-							"host": ["{{baseUrl}}"],
-							"path": ["carrera"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todas las Carreras",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Carrera por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/carrera",
-							"host": ["{{baseUrl}}"],
-							"path": ["carrera"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Carrera por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Carrera');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["carrera", "{{carreraId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Carrera",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Ciclo');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Ingeniería en Sistemas Actualizada\",\n  \"descripcion\": \"Descripción actualizada de la carrera\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["carrera", "{{carreraId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Carrera (DESHABILITADO)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/carrera/{{carreraId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["carrera", "{{carreraId}}"]
-						}
-					},
-					"description": "⚠️ No ejecutar. Deshabilitado para evitar errores de integridad referencial."
-				}
-			]
-		},
-		{
-			"name": "📚 Ciclos",
-			"item": [
-				{
-					"name": "Crear Ciclo",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/ciclo',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var nombre = 'Ciclo I-2024';",
-									"        var existentes = res.json().filter(function(c) { return c.nombre === nombre });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('cicloId', existentes[0].id_ciclo);",
-									"            postman.setNextRequest('Obtener Todos los Ciclos');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_ciclo;",
-									"    if (id) {",
-									"        pm.environment.set('cicloId', id);",
-									"        postman.setNextRequest('Obtener Todos los Ciclos');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_ciclo válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear ciclo.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Ciclo I-2024\",\n  \"fecha_inicio\": \"2024-02-01T00:00:00.000Z\",\n  \"fecha_fin\": \"2024-06-30T23:59:59.000Z\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/ciclo",
-							"host": ["{{baseUrl}}"],
-							"path": ["ciclo"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todos los Ciclos",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Ciclo por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/ciclo",
-							"host": ["{{baseUrl}}"],
-							"path": ["ciclo"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Ciclo por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Ciclo');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["ciclo", "{{cicloId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Ciclo",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Especialidad');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Ciclo I-2024 Actualizado\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["ciclo", "{{cicloId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Ciclo (DESHABILITADO)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/ciclo/{{cicloId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["ciclo", "{{cicloId}}"]
-						}
-					},
-					"description": "⚠️ No ejecutar. Deshabilitado para evitar errores de integridad referencial."
-				}
-			]
-		},
-		{
-			"name": "🎯 Especialidades",
-			"item": [
-				{
-					"name": "Crear Especialidad",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/especialidad',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var nombre = 'Desarrollo de Software';",
-									"        var existentes = res.json().filter(function(e) { return e.nombre === nombre && e.id_carrera == pm.environment.get('carreraId') });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('especialidadId', existentes[0].id_especialidad);",
-									"            postman.setNextRequest('Obtener Todas las Especialidades');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_especialidad;",
-									"    if (id) {",
-									"        pm.environment.set('especialidadId', id);",
-									"        postman.setNextRequest('Obtener Todas las Especialidades');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_especialidad válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear especialidad.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Desarrollo de Software\",\n  \"id_carrera\": {{carreraId}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/especialidad",
-							"host": ["{{baseUrl}}"],
-							"path": ["especialidad"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todas las Especialidades",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Especialidad por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/especialidad",
-							"host": ["{{baseUrl}}"],
-							"path": ["especialidad"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Especialidad por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Especialidad');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["especialidad", "{{especialidadId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Especialidad",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Docente');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Desarrollo de Software Avanzado\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["especialidad", "{{especialidadId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Especialidad (DESHABILITADO)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/especialidad/{{especialidadId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["especialidad", "{{especialidadId}}"]
-						}
-					},
-					"description": "⚠️ No ejecutar. Deshabilitado para evitar errores de integridad referencial."
-				}
-			]
-		},
-		{
-			"name": "👨‍🏫 Docentes",
-			"item": [
-				{
-					"name": "Crear Docente",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/docente',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var codigo = 'DOC001';",
-									"        var existentes = res.json().filter(function(d) { return d.codigo_docente === codigo });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('docenteId', existentes[0].id_docente);",
-									"            postman.setNextRequest('Obtener Todos los Docentes');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_docente;",
-									"    if (id) {",
-									"        pm.environment.set('docenteId', id);",
-									"        postman.setNextRequest('Obtener Todos los Docentes');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_docente válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear docente.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"codigo_docente\": \"DOC001\",\n  \"nombres\": \"Juan Carlos\",\n  \"apellidos\": \"García López\",\n  \"email\": \"juan.garcia@universidad.edu\",\n  \"telefono\": \"123456789\",\n  \"especialidad\": \"Ingeniería de Software\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/docente",
-							"host": ["{{baseUrl}}"],
-							"path": ["docente"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todos los Docentes",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Docente por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/docente",
-							"host": ["{{baseUrl}}"],
-							"path": ["docente"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Docente por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Docente');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/docente/{{docenteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["docente", "{{docenteId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Docente",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Estudiante');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"telefono\": \"987654321\",\n  \"email\": \"juan.garcia.nuevo@universidad.edu\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/docente/{{docenteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["docente", "{{docenteId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Docente (DESHABILITADO)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/docente/{{docenteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["docente", "{{docenteId}}"]
-						}
-					},
-					"description": "⚠️ No ejecutar. Deshabilitado para evitar errores de integridad referencial."
-				}
-			]
-		},
-		{
-			"name": "👨‍🎓 Estudiantes",
-			"item": [
-				{
-					"name": "Crear Estudiante",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/estudiante',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var codigo = 'EST001';",
-									"        var existentes = res.json().filter(function(e) { return e.codigo_estudiante === codigo });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('estudianteId', existentes[0].id_estudiante);",
-									"            postman.setNextRequest('Obtener Todos los Estudiantes');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_estudiante;",
-									"    if (id) {",
-									"        pm.environment.set('estudianteId', id);",
-									"        postman.setNextRequest('Obtener Todos los Estudiantes');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_estudiante válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear estudiante.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"codigo_estudiante\": \"EST001\",\n  \"nombres\": \"María Elena\",\n  \"apellidos\": \"Rodríguez Pérez\",\n  \"email\": \"maria.rodriguez@estudiante.edu\",\n  \"telefono\": \"987654321\",\n  \"fecha_ingreso\": \"2024-02-01T00:00:00.000Z\",\n  \"id_carrera\": {{carreraId}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/estudiante",
-							"host": ["{{baseUrl}}"],
-							"path": ["estudiante"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todos los Estudiantes",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Estudiante por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/estudiante",
-							"host": ["{{baseUrl}}"],
-							"path": ["estudiante"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Estudiante por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Estudiante');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["estudiante", "{{estudianteId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Estudiante",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Materia');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"telefono\": \"123123123\",\n  \"email\": \"maria.rodriguez.nuevo@estudiante.edu\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["estudiante", "{{estudianteId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Estudiante (DESHABILITADO)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/estudiante/{{estudianteId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["estudiante", "{{estudianteId}}"]
-						}
-					},
-					"description": "⚠️ No ejecutar. Deshabilitado para evitar errores de integridad referencial."
-				}
-			]
-		},
-		{
-			"name": "📖 Materias",
-			"item": [
-				{
-					"name": "Crear Materia",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/materia',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var nombre = 'Programación I';",
-									"        var existentes = res.json().filter(function(m) { return m.nombre === nombre });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('materiaId', existentes[0].id_materia);",
-									"            postman.setNextRequest('Obtener Todas las Materias');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_materia;",
-									"    if (id) {",
-									"        pm.environment.set('materiaId', id);",
-									"        postman.setNextRequest('Obtener Todas las Materias');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_materia válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear materia.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Programación I\",\n  \"codigo\": \"PROG101\",\n  \"creditos\": 4,\n  \"horas_semanales\": 6,\n  \"id_especialidad\": {{especialidadId}},\n  \"id_ciclo\": {{cicloId}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/materia",
-							"host": ["{{baseUrl}}"],
-							"path": ["materia"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todas las Materias",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Materia por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/materia",
-							"host": ["{{baseUrl}}"],
-							"path": ["materia"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Materia por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Materia');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/materia/{{materiaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["materia", "{{materiaId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Materia",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Asignación');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Programación I Avanzada\",\n  \"creditos\": 5\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/materia/{{materiaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["materia", "{{materiaId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Materia",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/materia/{{materiaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["materia", "{{materiaId}}"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "🔗 Asignaciones Docente-Materia",
-			"item": [
-				{
-					"name": "Crear Asignación",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/asignacion-docente-materia',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var existentes = res.json().filter(function(a) { return a.id_docente == pm.environment.get('docenteId') && a.id_materia == pm.environment.get('materiaId') });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('asignacionId', existentes[0].id_asignacion_docente_materia);",
-									"            postman.setNextRequest('Obtener Todas las Asignaciones');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_asignacion_docente_materia;",
-									"    if (id) {",
-									"        pm.environment.set('asignacionId', id);",
-									"        postman.setNextRequest('Obtener Todas las Asignaciones');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_asignacion_docente_materia válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear asignación.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"id_docente\": {{docenteId}},\n  \"id_materia\": {{materiaId}},\n  \"grupo\": \"A\",\n  \"horario\": \"Lunes 8:00-10:00, Miércoles 8:00-10:00\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/asignacion-docente-materia",
-							"host": ["{{baseUrl}}"],
-							"path": ["asignacion-docente-materia"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todas las Asignaciones",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Asignación por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/asignacion-docente-materia",
-							"host": ["{{baseUrl}}"],
-							"path": ["asignacion-docente-materia"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Asignación por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Asignación');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["asignacion-docente-materia", "{{asignacionId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Asignación",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Crear Matrícula');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"grupo\": \"B\",\n  \"horario\": \"Martes 10:00-12:00, Jueves 10:00-12:00\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["asignacion-docente-materia", "{{asignacionId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Asignación",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/asignacion-docente-materia/{{asignacionId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["asignacion-docente-materia", "{{asignacionId}}"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "📝 Matrículas",
-			"item": [
-				{
-					"name": "Crear Matrícula",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({",
-									"    url: pm.environment.get('baseUrl') + '/matricula',",
-									"    method: 'GET'",
-									"}, function (err, res) {",
-									"    if (res && res.json) {",
-									"        var existentes = res.json().filter(function(m) { return m.id_estudiante == pm.environment.get('estudianteId') && m.id_materia == pm.environment.get('materiaId') });",
-									"        if (existentes.length > 0) {",
-									"            pm.environment.set('matriculaId', existentes[0].id_matricula);",
-									"            postman.setNextRequest('Obtener Todas las Matrículas');",
-									"        }",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    var id = pm.response.json().id_matricula;",
-									"    if (id) {",
-									"        pm.environment.set('matriculaId', id);",
-									"        postman.setNextRequest('Obtener Todas las Matrículas');",
-									"    } else {",
-									"        console.warn('Advertencia: No se obtuvo id_matricula válido.');",
-									"    }",
-									"} else {",
-									"    console.warn('Advertencia: Error al crear matrícula.');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"id_estudiante\": {{estudianteId}},\n  \"id_materia\": {{materiaId}},\n  \"calificacion\": 85\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/matricula",
-							"host": ["{{baseUrl}}"],
-							"path": ["matricula"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Todas las Matrículas",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Obtener Matrícula por ID');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/matricula",
-							"host": ["{{baseUrl}}"],
-							"path": ["matricula"]
-						}
-					}
-				},
-				{
-					"name": "Obtener Matrícula por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Actualizar Matrícula');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["matricula", "{{matriculaId}}"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Matrícula",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": ["postman.setNextRequest('Eliminar Materia');"],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"calificacion\": 90\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["matricula", "{{matriculaId}}"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Matrícula",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/matricula/{{matriculaId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["matricula", "{{matriculaId}}"]
-						}
-					}
-				}
-			]
-		}
-	],
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": "http://localhost:3000",
-			"type": "string"
-		}
-	]
+  "info": {
+    "name": "Sistema Universitario",
+    "description": "API de Control de Sistema Universitario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"token\", jsonData.access_token);",
+                  "    pm.environment.set(\"usuario_id\", jsonData.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carreras",
+      "item": [
+        {
+          "name": "Create Carrera",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ingeniería en Sistemas\",\n  \"descripcion\": \"Carrera de Ingeniería en Sistemas\",\n  \"duracion\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/carrera",
+              "host": ["{{base_url}}"],
+              "path": ["carrera"]
+            }
+          }
+        },
+        {
+          "name": "Get All Carreras",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carrera",
+              "host": ["{{base_url}}"],
+              "path": ["carrera"]
+            }
+          }
+        },
+        {
+          "name": "Get Carrera by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carrera/{{carrera_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["carrera", "{{carrera_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Carrera",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ingeniería en Sistemas Actualizado\",\n  \"descripcion\": \"Carrera actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/carrera/{{carrera_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["carrera", "{{carrera_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Carrera",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/carrera/{{carrera_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["carrera", "{{carrera_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estudiantes",
+      "item": [
+        {
+          "name": "Create Estudiante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"apellido\": \"García\",\n  \"email\": \"juan@example.com\",\n  \"carnet\": \"2023001\",\n  \"carreraId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/estudiante",
+              "host": ["{{base_url}}"],
+              "path": ["estudiante"]
+            }
+          }
+        },
+        {
+          "name": "Get All Estudiantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/estudiante",
+              "host": ["{{base_url}}"],
+              "path": ["estudiante"]
+            }
+          }
+        },
+        {
+          "name": "Get Estudiante by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/estudiante/{{estudiante_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["estudiante", "{{estudiante_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Estudiante",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez García\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/estudiante/{{estudiante_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["estudiante", "{{estudiante_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Estudiante",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/estudiante/{{estudiante_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["estudiante", "{{estudiante_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Docentes",
+      "item": [
+        {
+          "name": "Create Docente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Carlos\",\n  \"apellido\": \"López\",\n  \"email\": \"carlos@example.com\",\n  \"especialidad\": \"Sistemas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/docente",
+              "host": ["{{base_url}}"],
+              "path": ["docente"]
+            }
+          }
+        },
+        {
+          "name": "Get All Docentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/docente",
+              "host": ["{{base_url}}"],
+              "path": ["docente"]
+            }
+          }
+        },
+        {
+          "name": "Get Docente by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/docente/{{docente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["docente", "{{docente_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Docente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Carlos Actualizado\",\n  \"email\": \"carlos.updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/docente/{{docente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["docente", "{{docente_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Docente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/docente/{{docente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["docente", "{{docente_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Materias",
+      "item": [
+        {
+          "name": "Create Materia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Programación I\",\n  \"codigo\": \"PROG101\",\n  \"creditos\": 4,\n  \"carreraId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/materia",
+              "host": ["{{base_url}}"],
+              "path": ["materia"]
+            }
+          }
+        },
+        {
+          "name": "Get All Materias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/materia",
+              "host": ["{{base_url}}"],
+              "path": ["materia"]
+            }
+          }
+        },
+        {
+          "name": "Get Materia by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/materia/{{materia_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["materia", "{{materia_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Materia",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Programación I Avanzada\",\n  \"creditos\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/materia/{{materia_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["materia", "{{materia_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Materia",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/materia/{{materia_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["materia", "{{materia_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ciclos",
+      "item": [
+        {
+          "name": "Create Ciclo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ciclo I 2025\",\n  \"descripcion\": \"Primer ciclo del año 2025\",\n  \"fechaInicio\": \"2025-01-15\",\n  \"fechaFin\": \"2025-05-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ciclo",
+              "host": ["{{base_url}}"],
+              "path": ["ciclo"]
+            }
+          }
+        },
+        {
+          "name": "Get All Ciclos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ciclo",
+              "host": ["{{base_url}}"],
+              "path": ["ciclo"]
+            }
+          }
+        },
+        {
+          "name": "Get Ciclo by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ciclo/{{ciclo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ciclo", "{{ciclo_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Ciclo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ciclo I 2025 Actualizado\",\n  \"descripcion\": \"Primer ciclo actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ciclo/{{ciclo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ciclo", "{{ciclo_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Ciclo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ciclo/{{ciclo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ciclo", "{{ciclo_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matriculas",
+      "item": [
+        {
+          "name": "Create Matricula",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": 1,\n  \"cicloId\": 1,\n  \"materiaId\": 1,\n  \"estado\": \"activa\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matricula",
+              "host": ["{{base_url}}"],
+              "path": ["matricula"]
+            }
+          }
+        },
+        {
+          "name": "Get All Matriculas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matricula",
+              "host": ["{{base_url}}"],
+              "path": ["matricula"]
+            }
+          }
+        },
+        {
+          "name": "Get Matricula by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matricula/1",
+              "host": ["{{base_url}}"],
+              "path": ["matricula", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
 }

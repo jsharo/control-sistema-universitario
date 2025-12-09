@@ -7,6 +7,15 @@ import { PrismaPg } from '@prisma/adapter-pg'
 @Injectable()
 export class AcademicoPrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private pool: Pool
+  materia: any
+  academico: any
+  matricula: any
+  estudiante: any
+  especialidad: any
+  docente: any
+  ciclo: any
+  carrera: any
+  asignacionDocenteMateria: any
   
   constructor() {
     dotenv.config()
