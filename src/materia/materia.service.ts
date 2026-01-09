@@ -5,19 +5,16 @@ import { AcademicoPrismaService } from 'src/prisma/academico.prisma.service';
 
 @Injectable()
 export class MateriaService {
-
   constructor(private readonly prisma: AcademicoPrismaService) {}
 
   async create(createMateriaDto: CreateMateriaDto) {
-    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-      return await this.prisma.materia.create({
+    return await this.prisma.materia.create({
       data: createMateriaDto
     });
   }
 
   async findAll() {
-    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-      return await this.prisma.materia.findMany({
+    return await this.prisma.materia.findMany({
       include: {
         especialidad: {
           include: {
@@ -33,8 +30,7 @@ export class MateriaService {
   }
 
   async findOne(id: number) {
-    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-      return await this.prisma.materia.findUnique({
+    return await this.prisma.materia.findUnique({
       where: { id_materia: id },
       include: {
         especialidad: {
@@ -49,9 +45,9 @@ export class MateriaService {
 
   async update(id: number, updateMateriaDto: UpdateMateriaDto) {
     await this.findOne(id);
+    
     if (updateMateriaDto.codigo) {
-      if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-        const existente = await this.prisma.materia.findFirst({
+      const existente = await this.prisma.materia.findFirst({
         where: {
           codigo: updateMateriaDto.codigo,
           NOT: { id_materia: id }
@@ -61,8 +57,8 @@ export class MateriaService {
         throw new Error('Ya existe una materia con ese código.');
       }
     }
-    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-      return await this.prisma.materia.update({
+    
+    return await this.prisma.materia.update({
       where: { id_materia: id },
       data: updateMateriaDto
     });
@@ -70,8 +66,7 @@ export class MateriaService {
 
   async remove(id: number) {
     await this.findOne(id);
-    if (!this.prisma.academico) throw new Error('BD Académico no disponible')
-      return await this.prisma.materia.delete({
+    return await this.prisma.materia.delete({
       where: { id_materia: id }
     });
   }

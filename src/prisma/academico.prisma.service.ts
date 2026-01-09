@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
-import { PrismaClient } from 'prisma/generated/auth/client'
+import { PrismaClient } from 'prisma/generated/academico/client' // Cambia esta ruta
 import * as dotenv from 'dotenv'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
@@ -7,15 +7,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 @Injectable()
 export class AcademicoPrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private pool: Pool
-  materia: any
   academico: any
-  matricula: any
-  estudiante: any
-  especialidad: any
-  docente: any
-  ciclo: any
-  carrera: any
-  asignacionDocenteMateria: any
   
   constructor() {
     dotenv.config()
@@ -28,9 +20,11 @@ export class AcademicoPrismaService extends PrismaClient implements OnModuleInit
     super({ adapter })
     this.pool = pool
   }
+
   async onModuleInit() {
     await this.$connect()
   }
+
   async onModuleDestroy() {
     await this.$disconnect()
     await this.pool?.end()
